@@ -1,1 +1,0 @@
-# Rapid Miner Install Tutorial
