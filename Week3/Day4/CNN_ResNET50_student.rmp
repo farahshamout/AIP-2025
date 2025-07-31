@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="11.1.000">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="11.1.000" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="image_handling:read_image_meta_data" compatibility="0.2.001" expanded="true" height="68" name="Training Images" origin="GENERATED_TUTORIAL" width="90" x="45" y="34">
+        <parameter key="directory" value="C:/Users/Dhiya/Downloads/hazelnut/new_dataset/train"/>
+        <parameter key="use_label" value="true"/>
+      </operator>
+      <operator activated="true" class="image_handling:image_pre_processor" compatibility="0.2.001" expanded="true" height="103" name="Pre-Process Images" origin="GENERATED_TUTORIAL" width="90" x="179" y="34">
+        <parameter key="path" value="Path"/>
+        <parameter key="use_label" value="false"/>
+        <process expanded="true">
+          <operator activated="true" class="image_handling:color_scale_image" compatibility="0.2.001" expanded="true" height="68" name="Color Scale Image" width="90" x="179" y="34">
+            <parameter key="minimum" value="0.0"/>
+            <parameter key="maximum" value="1.0"/>
+          </operator>
+          <operator activated="true" class="image_handling:resize_image" compatibility="0.2.001" expanded="true" height="68" name="Resize Image" width="90" x="313" y="34">
+            <parameter key="width" value="224"/>
+            <parameter key="height" value="224"/>
+          </operator>
+          <connect from_port="transform" to_op="Color Scale Image" to_port="transformer"/>
+          <connect from_op="Color Scale Image" from_port="transformer" to_op="Resize Image" to_port="transformer"/>
+          <connect from_op="Resize Image" from_port="transformer" to_port="transform"/>
+          <portSpacing port="source_transform" spacing="0"/>
+          <portSpacing port="sink_transform" spacing="0"/>
+        </process>
+      </operator>
+      <operator activated="true" class="multiply" compatibility="11.1.000" expanded="true" height="82" name="Multiply" width="90" x="380" y="34"/>
+      <operator activated="true" class="nd4j:group_models_generic" compatibility="1.2.001" expanded="true" height="103" name="Group Models (Generic)" width="90" x="916" y="85"/>
+      <operator activated="true" class="image_handling:read_image_meta_data" compatibility="0.2.001" expanded="true" height="68" name="Training Images (2)" origin="GENERATED_TUTORIAL" width="90" x="715" y="238">
+        <parameter key="directory" value="C:/Users/Dhiya/Downloads/hazelnut/new_dataset/test"/>
+        <parameter key="use_label" value="true"/>
+      </operator>
+      <operator activated="true" class="nd4j:apply_model_generic" compatibility="1.2.001" expanded="true" height="82" name="Apply Model (Generic) (2)" origin="GENERATED_TUTORIAL" width="90" x="1117" y="85">
+        <description align="center" color="transparent" colored="false" width="126">This &amp;quot;Apply Model (Generic)&amp;quot; operator is slightly different from the regular &amp;quot;Apply Model&amp;quot; operator in that it can apply models not only on ExampleSets, but also on high-dimensional data like images.</description>
+      </operator>
+      <operator activated="true" class="append" compatibility="9.9.002" expanded="true" height="82" name="Append" origin="GENERATED_TUTORIAL" width="90" x="1251" y="85">
+        <parameter key="data_management" value="auto"/>
+        <parameter key="merge_type" value="all"/>
+      </operator>
+      <operator activated="true" class="performance_classification" compatibility="11.1.000" expanded="true" height="82" name="Performance (2)" origin="GENERATED_TUTORIAL" width="90" x="1385" y="85">
+        <parameter key="main_criterion" value="first"/>
+        <parameter key="accuracy" value="true"/>
+        <parameter key="classification_error" value="false"/>
+        <parameter key="kappa" value="false"/>
+        <parameter key="weighted_mean_recall" value="false"/>
+        <parameter key="weighted_mean_precision" value="false"/>
+        <parameter key="spearman_rho" value="false"/>
+        <parameter key="kendall_tau" value="false"/>
+        <parameter key="absolute_error" value="false"/>
+        <parameter key="relative_error" value="false"/>
+        <parameter key="relative_error_lenient" value="false"/>
+        <parameter key="relative_error_strict" value="false"/>
+        <parameter key="normalized_absolute_error" value="false"/>
+        <parameter key="root_mean_squared_error" value="false"/>
+        <parameter key="root_relative_squared_error" value="false"/>
+        <parameter key="squared_error" value="false"/>
+        <parameter key="correlation" value="false"/>
+        <parameter key="squared_correlation" value="false"/>
+        <parameter key="cross-entropy" value="false"/>
+        <parameter key="margin" value="false"/>
+        <parameter key="soft_margin_loss" value="false"/>
+        <parameter key="logistic_loss" value="false"/>
+        <parameter key="skip_undefined_labels" value="true"/>
+        <parameter key="use_example_weights" value="true"/>
+        <list key="class_weights"/>
+      </operator>
+      <connect from_op="Training Images" from_port="output" to_op="Pre-Process Images" to_port="example set"/>
+      <connect from_op="Pre-Process Images" from_port="tensor" to_op="Multiply" to_port="input"/>
+      <connect from_op="Pre-Process Images" from_port="preprocessing model" to_op="Group Models (Generic)" to_port="models in 1"/>
+      <connect from_op="Group Models (Generic)" from_port="model out" to_op="Apply Model (Generic) (2)" to_port="model"/>
+      <connect from_op="Training Images (2)" from_port="output" to_op="Apply Model (Generic) (2)" to_port="unlabelled data"/>
+      <connect from_op="Apply Model (Generic) (2)" from_port="labelled data" to_op="Append" to_port="example set 1"/>
+      <connect from_op="Append" from_port="merged set" to_op="Performance (2)" to_port="labelled data"/>
+      <connect from_op="Performance (2)" from_port="performance" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
